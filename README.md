@@ -2,8 +2,7 @@
 
 > **An automated Machine Learning assistant that analyzes your CSV data, trains models, and generates beautiful HTML reports.**
 
-![App Screenshot Placeholder](docs/screenshot_main.png)
-*(Place a screenshot of the main UI here)*
+![App Screenshot Placeholder](2.png)
 
 ## 🚀 Features
 
@@ -87,12 +86,9 @@ docker-compose up --build
 ## 📸 Screenshots
 
 ### Report Output
-![Report Screenshot Placeholder](docs/screenshot_report.png)
+![Report Screenshot Placeholder](1.png)
 *(Place a screenshot of the generated HTML report here)*
 
-### Analysis Graphs
-![Graphs Screenshot Placeholder](docs/screenshot_graphs.png)
-*(Place a screenshot of the feature importance or confusion matrix here)*
 
 ---
 
