@@ -12,16 +12,14 @@ services:
     restart: unless-stopped
 
   ui:
-    image: python:3.11-slim
+    build: .
     container_name: ml-report-bot-ui
-    working_dir: /ui
+    working_dir: /app
     volumes:
-      - ./ui:/ui
+      - ./ui:/app/ui
     environment:
       - API_BASE=http://api:8000
-    command: >
-      sh -c "pip install --no-cache-dir -r requirements.txt
-      && streamlit run app.py --server.port 8501 --server.address 0.0.0.0"
+    command: streamlit run ui/app.py --server.port 8501 --server.address 0.0.0.0
     ports:
       - "8501:8501"
     depends_on:
