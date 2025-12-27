@@ -100,6 +100,3 @@ This project includes automated tests to ensure reliability.
 python -m pytest tests/
 ```
 
-## 📜 License
-
-MIT License. Free to use!
