@@ -1,0 +1,29 @@
+services:
+  api:
+    build: .
+    container_name: ml-report-bot-api
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./reports:/app/reports
+      - ./tmp:/app/tmp
+    restart: unless-stopped
+
+  ui:
+    image: python:3.11-slim
+    container_name: ml-report-bot-ui
+    working_dir: /ui
+    volumes:
+      - ./ui:/ui
+    environment:
+      - API_BASE=http://api:8000
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt
+      && streamlit run app.py --server.port 8501 --server.address 0.0.0.0"
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    restart: unless-stopped

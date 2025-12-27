@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>{{ title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>{{ title }}</h1>
+            <div class="metadata">Report Generated At: {{ generated_at }}</div>
+        </header>
+
+        <div class="summary-section">
+            <h3>📝 Executive Summary & Insights</h3>
+            <p>
+                This report provides a comprehensive analysis of your dataset. To help you understand the underlying
+                structure,
+                we have calculated the **means, standard deviations, and distributions** of your numeric data.
+                Understanding these central tendencies is crucial for verifying data quality.
+            </p>
+            <p><strong>💡 Suggestions for Improvement:</strong></p>
+            <ul>
+                <li>
+                    <strong>Target Selection:</strong> If the model performance is not satisfactory, consider
+                    <strong>changing the target column</strong>.
+                    Different targets can reveal distinct patterns and dependencies in your data.
+                </li>
+                <li>
+                    <strong>Data Quality:</strong> Check the <em>Missing Values</em> section below. High missing rates
+                    might require specific imputation strategies
+                    to avoid bias.
+                </li>
+                <li>
+                    <strong>Feature Analysis:</strong> Use the statistical table at the bottom to spot outliers.
+                    Removing or normalizing these values could lead to better results.
+                </li>
+                <li>
+                    <strong>Model Selection:</strong> If the results are not optimal, try <strong>selecting a different
+                        model</strong>
+                    (e.g., Linear Regression or Decision Tree) from the dropdown in the app. Different algorithms handle
+                    data patterns differently.
+                </li>
+            </ul>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h2>📁 Dataset Profile</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Rows</span>
+                        <span class="stat-value">{{ profile.rows }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Columns</span>
+                        <span class="stat-value">{{ profile.cols }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Missing</span>
+                        <span class="stat-value">{{ profile.missing_total }}</span>
+                    </div>
+                </div>
+
+                <h3>Column Details</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Missing Values</th>
+                            <th>Data Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for col, miss in profile.missing_by_col.items() %}
+                        <tr>
+                            <td><strong>{{ col }}</strong></td>
+                            <td>{{ miss }}</td>
+                            <td><span class="badge badge-gray">{{ profile.dtypes[col] }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>🧠 Training Results</h2>
+                <div class="badges-container">
+                    <div class="badge badge-blue">Task Type: {{ train.task_type }}</div>
+                    <div class="badge badge-green">Model: {{ train.model_name }}</div>
+                </div>
+
+                <h3>Performance Metrics</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for k, v in train.metrics.items() %}
+                        <tr>
+                            <td>{{ k }}</td>
+                            <td><strong>{{ v }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% if profile.numeric_stats %}
+        <div class="card full-width">
+            <h2>📊 Statistical Analysis (Mean & Distribution)</h2>
+            <p class="section-desc">
+                Below are the summary statistics for your numeric columns.
+                Pay attention to the <strong>mean</strong> and <strong>std</strong> (standard deviation) to understand
+                the data spread.
+            </p>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Column</th>
+                            <th>Mean</th>
+                            <th>Std Dev</th>
+                            <th>Min</th>
+                            <th>Max</th>
+                            <th>Median (50%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for col, stats in profile.numeric_stats.items() %}
+                        <tr>
+                            <td><strong>{{ col }}</strong></td>
+                            <td>{{ stats['mean'] }}</td>
+                            <td>{{ stats['std'] }}</td>
+                            <td>{{ stats['min'] }}</td>
+                            <td>{{ stats['max'] }}</td>
+                            <td>{{ stats['50%'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if train.plots %}
+        <div class="card full-width">
+            <h2>📉 Visual Analysis</h2>
+            <div class="grid-2">
+                {% if train.plots.cluster_pca %}
+                <div class="chart-container">
+                    <h3>Clustering (PCA 2D)</h3>
+                    <img src="data:image/png;base64,{{ train.plots.cluster_pca }}" alt="Cluster PCA"
+                        style="width:100%; border-radius:8px;">
+                </div>
+                {% endif %}
+
+                {% if train.plots.elbow_curve %}
+                <div class="chart-container">
+                    <h3>Elbow Method (Optimal K)</h3>
+                    <img src="data:image/png;base64,{{ train.plots.elbow_curve }}" alt="Elbow Curve"
+                        style="width:100%; border-radius:8px;">
+                    <p><i>The "elbow" point indicates the optimal number of clusters.</i></p>
+                </div>
+                {% endif %}
+                {% if train.plots.congestion_matrix %}
+                <div class="chart-container">
+                    <h3>Confusion Matrix</h3>
+                    <img src="data:image/png;base64,{{ train.plots.congestion_matrix }}" alt="Confusion Matrix"
+                        style="width:100%; border-radius:8px;">
+                </div>
+                {% endif %}
+
+                {% if train.plots.actual_vs_pred %}
+                <div class="chart-container">
+                    <h3>Actual vs Predicted</h3>
+                    <img src="data:image/png;base64,{{ train.plots.actual_vs_pred }}" alt="Actual vs Predicted"
+                        style="width:100%; border-radius:8px;">
+                </div>
+                {% endif %}
+
+                {% if train.plots.feature_importance %}
+                <div class="chart-container">
+                    <h3>Feature Importance</h3>
+                    <img src="data:image/png;base64,{{ train.plots.feature_importance }}" alt="Feature Importance"
+                        style="width:100%; border-radius:8px;">
+                </div>
+                {% endif %}
+            </div>
+
+            {% if cluster_analysis %}
+            <div class="card full-width">
+                <h2>🧩 AI Cluster Insights</h2>
+                <div class="analysis-text">
+                    {{ cluster_analysis | safe }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>
