@@ -87,7 +87,6 @@ docker-compose up --build
 
 ### Report Output
 ![Report Screenshot Placeholder](1.png)
-*(Place a screenshot of the generated HTML report here)*
 
 
 ---
