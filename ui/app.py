@@ -7,7 +7,6 @@ st.set_page_config(page_title="ML Report Bot", page_icon="📊", layout="centere
 API_BASE = os.getenv("API_BASE", "http://localhost:8000")
 
 st.title("📊 ML Report Bot (Web)")
-st.caption("Upload CSV → Auto-detect target → Train/Analyze → Download Report / Open in New Tab")
 
 uploaded = st.file_uploader("Upload your CSV file", type=["csv"])
 if not uploaded:
